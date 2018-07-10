@@ -109,8 +109,8 @@ void READ_VR(void) {
 /* 観覧車モータ用処理２ */
 void PWM_SYORI(void) {
   if(STATUS == 0) {
-    analogWrite(IN1, 255);
-    analogWrite(IN2, 255);
+    analogWrite(IN1, 0);
+    analogWrite(IN2, 0);
   }
   if(STATUS == 1) {
     analogWrite(IN1, 255);
