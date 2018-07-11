@@ -95,6 +95,7 @@ void READ_VR(void) {
   VR_VALUE =analogRead(VR_PIN);
   if((VR_VALUE >= 500) && (VR_VALUE <= 523)) {
     STATUS = 0;
+    PWM_VALUE = 0;
   }
   if(VR_VALUE <= 499) {
     STATUS = 1;
