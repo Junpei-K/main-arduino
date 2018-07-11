@@ -36,7 +36,7 @@ void loop() {
     // 待機状態
 
     // MASTER からSTARTが送られたらステータスがSTARTに遷移
-    if(Wire.read() == START) {
+    if(b == START) {
       status = START;
     }
   } else if(status == START) {
