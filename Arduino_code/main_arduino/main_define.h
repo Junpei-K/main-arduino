@@ -6,8 +6,8 @@
 #define MOTOR_ADDRESS 9   // 的動作Arduino のSLVアドレス
 
 /* ピン番号 */
-#define PIN_GUN 1   // トリガーのピン番号
-#define PIN_SINDOU 2  // 振動モータのピン番号
+#define PIN_GUN 5   // トリガーのピン番号
+#define PIN_SINDOU 4  // 振動モータのピン番号
 
 /* SLVへの信号 */
 #define START 101
