@@ -16,10 +16,14 @@ int target_hit(byte target_num)
 {
   int hit_f = 0; // 既に当たった判定がされていないとき、1
   /* 既に当たった判定がされている的だった場合、無視する */
-  if(target_array[target_num] != ON) {
-    target_array[target_num] = ON;
-    score += SCORE_MIN_UNIT;
-    hit_f = 1;
+  if(target_num == 16) {
+    // 当たっている的がないとき、16を受け取る
+  }else if(target_num >= 0 && target_num <= (TARGET_MAX)) {
+    if(target_array[target_num] != ON) {
+      target_array[target_num] = ON;
+      score += SCORE_MIN_UNIT;
+      hit_f = 1;
+    }
   }
 
   return hit_f;
