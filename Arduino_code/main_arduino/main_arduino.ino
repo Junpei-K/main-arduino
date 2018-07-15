@@ -44,17 +44,16 @@ void loop() {
   char scorenum; //PCへ送るスコア
   int hit_flag; // 当たった判定がされていない的に当たったフラグ
 
+Serial.println(digitalRead(PIN_GUN));
+
   /*銃のトリガーON・OFFにより場合わけ */
   if(digitalRead(PIN_GUN) == HIGH)
   {
     // トリガーONのとき
-    // 的管理Arduino にトリガーONを伝える
-    Wire.beginTransmission(TARGET_ADDRESS);
-    Wire.write(TRIGGER_ON);
-    Wire.endTransmission();
-    delay(100);
+    // デバッグ用 /////////////////
+    Serial.println("TRIGGER_ON");
+    //////////////////////////////
 
-    // 振動モータON
     digitalWrite(PIN_SINDOU, HIGH);
 
     // 残り弾数処理
@@ -71,6 +70,7 @@ void loop() {
     delay(50);
 
     /* 的の当たり判定情報の受取り */
+    // 的管理Arduinoに要求
     Wire.requestFrom(TARGET_ADDRESS, 1);
     while(Wire.available()) {
       // 当たり判定のあった的の番号を受け取る
@@ -78,6 +78,11 @@ void loop() {
 
       // 既に当たった的かどうか判定する
       hit_flag = target_hit(hit_num);
+
+      // デバッグ用 ///////////////////
+      Serial.print("TARGET Number:");
+      Serial.println(hit_num);
+      ////////////////////////////////
     }
     if (hit_flag == 1) {
       // 的に当たった判定をPCに送る
@@ -88,17 +93,17 @@ void loop() {
       Wire.beginTransmission(MOTOR_ADDRESS);
       Wire.write(hit_num);
       Wire.endTransmission();
-    } else {
-      // トリガーOFFのとき
-      // 振動モータOFF
-      digitalWrite(PIN_SINDOU, LOW);
 
-      // 的管理Arduino にトリガーOFFを伝える
-      Wire.beginTransmission(TARGET_ADDRESS);
-      Wire.write(TRIGGER_OFF);
-      Wire.endTransmission();
-      delay(100);
+      Serial.println(hit_num);
     }
+  } else {
+    // トリガーOFFのとき
+    // 振動モータOFF
+    digitalWrite(PIN_SINDOU, LOW);
+
+    // デバッグ用 //////////////////
+    Serial.println("TRIGGER_OFF");
+    ///////////////////////////////
   }
 
   // 現在スコアの取得
@@ -117,6 +122,10 @@ void loop() {
     finish();
     while(1){} /* ★再起動まで待機 */
   }
+
+  // ループ全体のディレイ //
+  delay(300);
+  /////////////////////////
 }
 
 /* ゲームの停止処理 */
