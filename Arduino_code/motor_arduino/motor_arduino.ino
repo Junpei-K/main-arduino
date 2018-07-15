@@ -13,6 +13,7 @@ unsigned char status; // ステータス
 byte b; // Wire.read用
 
 void setup() {
+  Serial.begin(9600);
   // Wire定義
   Wire.begin(SLAVE_ADDRESS);
   Wire.onReceive(slv_receive);
@@ -22,16 +23,14 @@ void setup() {
   servo2.attach(SERVO2);
   servo3.attach(SERVO3);
 
-  // パカパカを初期位置に動かす
-  servo1.write(0);
-  servo2.write(0);
-  servo3.write(0);
-
   // 初期状態の設定
   status = WAIT;
 }
 
 void loop() {
+  if(status != WAIT && status != START && status != STOP){
+    status = RUNNING;
+  }
   if(status == WAIT) {
     // 待機状態
 
@@ -43,9 +42,9 @@ void loop() {
     // ゲーム開始時状態
 
     // パカパカをあける
-    servo1.write(180);
-    servo2.write(180);
-    servo3.write(180);
+    servo1.write(0);
+    servo2.write(0);
+    servo3.write(0);
     delay(1000);
 
     // ゲーム中状態に遷移
@@ -56,18 +55,22 @@ void loop() {
 
     /* 当たった的がパカパカなら対応するサーボを動かす */
     if(b == TARGET1) {
-      servo1.write(0);
+      servo1.write(90);
     }
     if(b == TARGET2) {
-      servo2.write(0);
+      servo2.write(90);
     }
     if(b == TARGET3) {
-      servo3.write(0);
+      servo3.write(90);
     }
 
     /* 観覧車を動かす */
     READ_VR();
     PWM_SYORI();
+    delay(50);
+
+    /* モグラを動かす */
+    PWM_SYORI_MOGURA();
     delay(50);
 
     // MASTERからSTOPが送られたら終了状態に遷移
@@ -76,15 +79,6 @@ void loop() {
     }
   } else if(status == STOP) {
     // 終了処理
-
-    // パカパカを初期状態に戻す ★いらないかも
-    servo1.write(0);
-    servo2.write(0);
-    servo3.write(0);
-
-    servo1.detach();
-    servo2.detach();
-    servo3.detach();
   } else {
     // ここにはこない
   }
@@ -123,10 +117,21 @@ void PWM_SYORI(void) {
   }
 }
 
+/* モグラ用モータ処理 */
+void PWM_SYORI_MOGURA(void) {
+  analogWrite(IN3, 255);
+  analogWrite(IN4, 255);
+}
+
 /*MASTERから情報が送られたときの割り込み関数 */
 void slv_receive() {
   // 変数bに送られた情報を格納する
-  while (Wire.available() > 0) {
-    b = Wire.read();
+  while (Wire.available()) {
+    status = Wire.read();
   }
+
+  // デバッグ用 ///////
+  Serial.print("Info from MASTER:");
+  Serial.println(status);
+  ////////////////////
 }
